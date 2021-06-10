@@ -5,22 +5,18 @@ It contains the definition of routes and views for the application.
 
 from flask import Flask
 from flask import render_template, request
+from flask_ngrok import run_with_ngrok
 app = Flask(__name__)
+run_with_ngrok(app)
 
 # Make the WSGI interface available at the top level so wfastcgi can get it.
 wsgi_app = app.wsgi_app
 
 
 @app.route('/')
-def hello():
-    """Renders a sample page."""
-    return "Hello World!"
+def index():
+    num = ['tom', 'mike', 'amuxia', 'zhao', 'lisy']
+    return render_template('test.html', num=num)
 
 if __name__ == '__main__':
-    import os
-    HOST = os.environ.get('SERVER_HOST', 'localhost')
-    try:
-        PORT = int(os.environ.get('SERVER_PORT', '5555'))
-    except ValueError:
-        PORT = 5555
-    app.run(HOST, PORT)
+    app.run()
