@@ -4,10 +4,10 @@ It contains the definition of routes and views for the application.
 """
 
 from flask import Flask
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask_ngrok import run_with_ngrok
 
-from forms import LoginForm
+from forms import LoginForm, RegisterForm
 from manager import User
 from flask_login import login_user, login_required
 from flask_login import LoginManager, current_user
@@ -31,20 +31,30 @@ wsgi_app = app.wsgi_app
 
 @app.route('/')
 def index():
-    return 'hello'
+    return redirect(url_for('login'))
 
-@app.route('/login')
+@app.route('/login', methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         user_name = request.form.get('username', None)
         password = request.form.get('password', None)
         remember_me = request.form.get('remember_me', False)
-        user = User(user_name)
-        if user.verify_password(password):
-            login_user(user, remember=remember_me)
-            return redirect(request.args.get('next') or url_for('main'))
-    return render_template('login.html', title = "sign in", form = form)
+        #user = User(user_name)
+        #if user.verify_password(password):
+            #login_user(user, remember=remember_me)
+            #return redirect()
+    return render_template('login.html', form = form)
+
+@app.route('/register', methods=['GET','POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        user_name = request.form.get('username', None)
+        password = request.form.get('password', None)
+        #user = User(user_name)
+        #return redirect(url_for('login'))
+    return render_template('register.html', form=form)
 
 @app.route('/logout')
 @login_required

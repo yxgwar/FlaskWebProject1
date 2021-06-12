@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login Page</title>
+    <title>Register Page</title>
 </head>
 <body>
-    <form action="{{ url_for("login") }}" method="POST">
+    <form action="{{ url_for("register") }}" method="POST">
         <p>
             User Name:<br>
             <input type="text" name="username" /><br>
@@ -15,13 +15,9 @@
             <input type="password" name="password" /><br>
         </p>
         <p>
-            <input type="checkbox" name="remember_me" />Remember Me<br>
-        </p>
-        <p>
-            <input type="submit" value="sign in"><br>
+            <input type="submit" value="sign up">
         </p>
         {{ form.csrf_token }}
     </form>
-    <a href="register"><input type="submit" value="sign up"></a>
 </body>
 </html>
