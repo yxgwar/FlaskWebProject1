@@ -14,3 +14,7 @@ class RegisterForm(FlaskForm):
     username = StringField('username',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
     submit = SubmitField('sign up')
+
+class HomeForm(FlaskForm):
+    title = StringField('title',validators=[DataRequired()])
+    submit = SubmitField('search')

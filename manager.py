@@ -1,8 +1,7 @@
-# models.py
-
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 from flask_login import UserMixin
+import DB
 import uuid
 
 class User(UserMixin):
@@ -16,27 +15,24 @@ class User(UserMixin):
 
     @password.setter
     def password(self, password):
-        """save user name, id and password hash to json file"""
-        self.password_hash = generate_password_hash(password)
-        #写入账号数据
+        #self.password_hash = generate_password_hash(password)
+        #DB.ac_insert(self.username, self.password_hash)
+        DB.ac_insert(self.username, password)
 
     def verify_password(self, password):
-        password_hash = self.get_password_hash()
-        if password_hash is None:
+        if password == DB.ac_query(self.username):
+            return True
+        else:
             return False
-        return check_password_hash(self.password_hash, password)
-
-    def get_password_hash(self):
-        #根据用户名获取密码hash值
-        return None
         
     def get_id(self):
-        if self.username is not None:
-            #从数据库中获取id
-            return None
-        return unicode(uuid.uuid4())
+        id = DB.ac_id(self.username)
+        if id is None:
+            return uuid.uuid4()
+        else:
+            return id
 
     @staticmethod
     def get(user_id):
-        #根据user_id获取user_name
+        user_name = DB.ac_name(user_id)
         return User(user_name)

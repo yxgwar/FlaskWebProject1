@@ -7,10 +7,10 @@ from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask_ngrok import run_with_ngrok
 
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, HomeForm
 from manager import User
-from flask_login import login_user, login_required
-from flask_login import LoginManager, current_user
+from flask_login import login_user, login_required, current_user
+from flask_login import LoginManager
 from flask_login import logout_user
 
 app = Flask(__name__)
@@ -40,10 +40,11 @@ def login():
         user_name = request.form.get('username', None)
         password = request.form.get('password', None)
         remember_me = request.form.get('remember_me', False)
-        #user = User(user_name)
-        #if user.verify_password(password):
-            #login_user(user, remember=remember_me)
-            #return redirect()
+        user = User(user_name)
+        if user.verify_password(password):
+            print('aaa')
+            login_user(user, remember=remember_me)
+            return redirect(url_for('home'))
     return render_template('login.html', form = form)
 
 @app.route('/register', methods=['GET','POST'])
@@ -52,9 +53,16 @@ def register():
     if form.validate_on_submit():
         user_name = request.form.get('username', None)
         password = request.form.get('password', None)
-        #user = User(user_name)
-        #return redirect(url_for('login'))
+        user = User(user_name)
+        user.password = password
+        return redirect(url_for('login'))
     return render_template('register.html', form=form)
+
+@app.route('/home', methods=['GET','POST'])
+@login_required
+def home():
+    form = HomeForm()
+    return render_template('home.html', name = current_user.username, form = form)
 
 @app.route('/logout')
 @login_required
