@@ -3,6 +3,7 @@ from werkzeug.security import check_password_hash
 from flask_login import UserMixin
 import DB
 import uuid
+import os
 
 class User(UserMixin):
     def __init__(self, username):
@@ -15,8 +16,6 @@ class User(UserMixin):
 
     @password.setter
     def password(self, password):
-        #self.password_hash = generate_password_hash(password)
-        #DB.ac_insert(self.username, self.password_hash)
         DB.ac_insert(self.username, password)
 
     def verify_password(self, password):
@@ -36,3 +35,8 @@ class User(UserMixin):
     def get(user_id):
         user_name = DB.ac_name(user_id)
         return User(user_name)
+
+def random_filename(filename):
+    ext = os.path.splitext(filename)[1]
+    new_filename = uuid.uuid4().hex + ext
+    return new_filename

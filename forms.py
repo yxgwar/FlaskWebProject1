@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
+from flask_wtf.file import FileField, FileRequired, FileAllowed
 
 #登陆表单
 class LoginForm(FlaskForm):
@@ -16,5 +17,6 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('sign up')
 
 class HomeForm(FlaskForm):
-    title = StringField('title',validators=[DataRequired()])
-    submit = SubmitField('search')
+    title = StringField('title', validators=[DataRequired()])
+    movie = FileField('movie',validators=[FileRequired(), FileAllowed(['mp4'])])
+    submit = SubmitField('upload')

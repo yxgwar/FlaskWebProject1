@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>video</title>
+    <style>
+        .box-out {
+            position: relative;
+            #border:solid 1px #555;
+            float: left;
+            padding: 0px 10px;
+        }
+
+        .box-in {
+            position: absolute;
+            left: 0;
+            top: 0px;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+        }
+
+        .title-in1 {
+            position: absolute;
+            top: 240px;
+            left: 10px;
+            margin: auto;
+            text-align: center;
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+        }
+
+        .title-in2 {
+            position: absolute;
+            top: 240px;
+            right: 10px;
+            margin: auto;
+            text-align: center;
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>我的视频</h1>
+    <p>
+        {{ username }}
+    </p>
+    <p>
+        <a href="{{ url_for("home", name = username) }}"><input type="submit" value="主页"></a>
+    </p>
+    {% if videos %}
+    {% for video in videos %}
+    <div id="container">
+        <div class="box-out" style="height:280px;width:400px;">
+            <video class="movie box-in" width="400" height="225" controls="controls">
+                <source src="../../static/{{ video[1] }}" type="video/mp4" />
+            </video>
+            <p class="title-in1">{{ video[0] }}</p>
+            <p class="title-in2">{{ video[2] }}</p>
+        </div>
+        {% endfor %}
+    </div>
+        {% else %}
+        还没有上传视频
+        {% endif %}
+</body>
+</html>

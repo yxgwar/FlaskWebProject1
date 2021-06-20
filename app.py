@@ -3,24 +3,31 @@ This script runs the application using a development server.
 It contains the definition of routes and views for the application.
 """
 
-from flask import Flask
+from flask import Flask, flash
 from flask import render_template, request, redirect, url_for
 from flask_ngrok import run_with_ngrok
 
 from forms import LoginForm, RegisterForm, HomeForm
-from manager import User
+from manager import User, random_filename
 from flask_login import login_user, login_required, current_user
 from flask_login import LoginManager
 from flask_login import logout_user
+
+import datetime
+import DB
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "12345678"
 run_with_ngrok(app)
 
+import os
+app.config['UPLOAD_PATH'] = os.path.join(app.root_path, 'static')
+
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'login'
 login_manager.init_app(app=app)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -42,9 +49,8 @@ def login():
         remember_me = request.form.get('remember_me', False)
         user = User(user_name)
         if user.verify_password(password):
-            print('aaa')
-            login_user(user, remember=remember_me)
-            return redirect(url_for('home'))
+            login_user(user, remember = remember_me)
+            return redirect(url_for('home', name = user_name))
     return render_template('login.html', form = form)
 
 @app.route('/register', methods=['GET','POST'])
@@ -56,13 +62,28 @@ def register():
         user = User(user_name)
         user.password = password
         return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', form = form)
 
-@app.route('/home', methods=['GET','POST'])
+@app.route('/home/<name>', methods=['GET','POST'])
 @login_required
-def home():
+def home(name):
     form = HomeForm()
+    if form.validate_on_submit():
+        title = request.form.get('title', None)
+        f = form.movie.data
+        filename = random_filename(f.filename)
+        f.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        flash('Upload success.')
+        time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        DB.video_insert(title, filename, name, time)
+        return redirect(url_for('video', username = name))
     return render_template('home.html', name = current_user.username, form = form)
+
+@app.route('/video/<username>', methods=['GET','POST'])
+@login_required
+def video(username):
+    videos = DB.video_user_query(username)
+    return render_template('video.html', username = current_user.username, videos = videos)
 
 @app.route('/logout')
 @login_required

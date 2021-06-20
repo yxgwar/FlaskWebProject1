@@ -49,11 +49,11 @@ def ac_query(user_name):
     except:
         return None
 
-def video_insert(name,path,user_name):
+def video_insert(name,path,user_name,time):
     con = sqlite3.connect(DATABASE)
     cur = con.cursor()
-    sql = 'insert into video (name,path,user_name) values(?,?,?)'
-    cur.execute(sql,[name,path,user_name])
+    sql = 'insert into video (name,path,user_name,time) values(?,?,?,?)'
+    cur.execute(sql,[name,path,user_name,time])
     con.commit()
     con.close()
 
@@ -68,3 +68,12 @@ def video_name_query(name):
         return result[0]
     except:
         return None
+
+def video_user_query(username):
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'select name, path, time from video where user_name = ?'
+    cur.execute(sql,[username])
+    result = cur.fetchall()
+    con.close()
+    return result
