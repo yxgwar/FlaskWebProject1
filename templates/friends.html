@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Friends</title>
+</head>
+<body>
+    <div id="container" style="z-index: -100; left: 0px; top: 0px; width: 100%; height: 200px">
+        <div id="menu" style="height:200px;width:40%;float:left;">
+            <p>
+                {{ username }}
+                <a href="{{ url_for("logout") }}"><input type="submit" value="登出"></a>
+            </p>
+        </div>
+        <div id="content" style="height:200px;width:60%;float:left;">
+            <form action="{{ url_for("friend", name = username) }}" method="POST">
+                <p>
+                    输入要搜索账号:<br>
+                    <input type="text" name="username" />
+                    <input type="submit" value="SEARCH">
+                </p>
+                {{ form.csrf_token }}
+            </form>
+        </div>
+    </div>
+    <hr>
+    <p>
+        <a href="{{ url_for("home", name = username) }}"><input type="submit" value="主页"></a>
+    </p>
+    <div id="container" style="z-index: -100; left: 0px; top: 0px; width: 100%; height: 100%">
+        <div id="menu" style="height:100%;width:40%;float:left;">
+            <b>好友列表</b><br>
+            {% if friends %}
+            {% for friend in friends %}
+            <div id="container">
+                <div>
+                    <p>
+                        <h5><a href="{{ url_for("othershome", username = friend[0]) }}">{{friend[0]}}</a></h5>
+                    </p>
+                </div>
+            {% endfor %}
+            </div>
+            {% else %}
+            还没有好友
+            {% endif %}
+        </div>
+        <div id="content" style="height:100%;width:60%;float:left;">
+            <b>好友消息</b><br>
+            {% if emails %}
+            {% for email in emails %}
+            <div id="container">
+                <div>
+                    <p>
+                        <h5>{{ email[0] }} : {{ email[1] }}</h5>
+                        <h6>{{ email[2] }}</h6>
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            还没有消息
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

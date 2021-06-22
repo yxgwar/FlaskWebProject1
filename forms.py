@@ -20,3 +20,11 @@ class HomeForm(FlaskForm):
     title = StringField('title', validators=[DataRequired()])
     movie = FileField('movie',validators=[FileRequired(), FileAllowed(['mp4'])])
     submit = SubmitField('upload')
+
+class CommentForm(FlaskForm):
+    comment = StringField('comment', validators=[DataRequired()])
+    submit = SubmitField('comment')
+
+class SearchForm(FlaskForm):
+    username = StringField('username', validators=[DataRequired()])
+    submit = SubmitField('username')

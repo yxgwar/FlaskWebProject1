@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ video[0] }}</title>
+</head>
+<body>
+
+    <div style="max-width:1200px;margin:0 auto">
+        <p>
+            {{ name }}
+            <a href="{{ url_for("logout") }}"><input type="submit" value="登出"></a>
+        </p>
+        <hr>
+        <p>
+            作者:<br>
+            <a href="{{ url_for("home", name = video[2]) }}"><input type="submit" value="{{ video[2] }}"></a>
+        </p>
+        <div id="header">
+            <p>
+                <h1 style="margin-bottom:0;">{{ video[0] }}</h1>
+                <h4>{{ video[3] }}</h4>
+            </p>
+        </div>
+
+        <div id="content" style="height:450px;width:800px;">
+            <video width="720" height="425" controls="controls">
+                <source src="../../static/{{ video[1] }}" type="video/mp4" />
+            </video>
+        </div>
+        <p>
+            <a href="../../static/{{ video[1] }}" download="../../static/{{ video[1] }}"><input type="submit" value="download"></a>
+        </p>
+        <hr>
+        <h3>评论</h3>
+        {% if comments %}
+        {% for comment in comments %}
+        <div id="container">
+            <div>
+                <p>
+                    <h5><a href="{{ url_for("othershome", username = comment[0]) }}">{{ comment[0] }}</a> : {{ comment[1] }}</h5>
+                    <h6>{{ comment[2] }}</h6>
+                </p>
+                <hr>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        还没有评论
+        {% endif %}
+        <form action="{{ url_for("singlemovie", id = id) }}" method="POST">
+            <p>
+                添加评论:<br>
+                <input type="text" name="comment" style="height:60px;width:600px;" />
+                <br>
+            </p>
+            <p>
+                <input type="submit" value="发表评论">
+            </p>
+            {{ form.csrf_token }}
+        </form>
+    </div>
+</body>
+</html>

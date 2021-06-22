@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ username }}的主页</title>
+</head>
+<body>
+    <p>
+        {{ name }}
+        <a href="{{ url_for("logout") }}"><input type="submit" value="log out"></a>
+    </p>
+    <hr>
+    <h1>{{ username }}的视频</h1>
+    <p>
+        <a href="{{ url_for("video", username = username) }}"><input type="submit" value="videos"></a>
+    </p>
+</body>
+</html>
