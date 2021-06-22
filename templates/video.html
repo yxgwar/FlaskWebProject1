@@ -50,7 +50,7 @@
     </p>
     <hr>
     <h1>{{ authorname }}的视频</h1>
-    {% if "{{ authorname }} == {{ username }}" %}
+    {% if "{{ authorname }}" == "{{ username }}" %}
     <p>
         <a href="{{ url_for("home", name = username) }}"><input type="submit" value="我的主页"></a>
     </p>
