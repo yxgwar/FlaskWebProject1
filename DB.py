@@ -78,11 +78,20 @@ def video_user_query(username):
 def video_comments_query(video_id):
     con = sqlite3.connect(DATABASE)
     cur = con.cursor()
-    sql = 'select user_name, comment, time from Comment where video_id = ?'
+    sql = 'select user_name, comment, time, comment_id from Comment where video_id = ?'
     cur.execute(sql,[video_id])
     result = cur.fetchall()
     con.close()
     return result
+
+def comment_video_query(comment_id):
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'select video_id from Comment where comment_id = ?'
+    cur.execute(sql,[comment_id])
+    result = cur.fetchall()
+    con.close()
+    return result[0]
 
 def video_comments_insert(video_id,user_name,comment,time):
     con = sqlite3.connect(DATABASE)
@@ -115,6 +124,100 @@ def message_query(user_name):#依据用户名查询收到的所有消息
     cur = con.cursor()
     sql = 'select send_user,message,time from emails where receive_user = ?'
     cur.execute(sql,[user_name])
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def friendship_query(owner_name,servant):#检测两位用户是否是好友，owner_name表示访问者，servant为被访问者
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'select * from friends where owner_name = ? and servant_name = ?'
+    cur.execute(sql,[owner_name,servant])
+    result = cur.fetchone()
+    con.close()
+    if result is None:
+        return None
+    else:
+        return True
+
+def friendship_insert(owner_name,servant):#加为好友
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'insert into friends (owner_name,servant_name) values(?,?)'
+    cur.execute(sql,[owner_name,servant])
+    con.commit()
+    con.close()
+
+def friendship_delete(owner_name,servant):#删除好友
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'delete from friends where owner_name = ? and servant_name = ?'
+    cur.execute(sql,[owner_name,servant])
+    con.commit()
+    con.close()
+
+def send_eamil(send_user,receive_user,message,time):#发送消息
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'insert into emails (send_user,receive_user,message,time) values(?,?,?,?)'
+    cur.execute(sql,[send_user,receive_user,message,time])
+    con.commit()
+    con.close()
+
+def admin_id_query(id):#判断是否为管理员
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'select * from admin where user_id = ?'
+    cur.execute(sql,[id])
+    result = cur.fetchone()
+    con.close()
+    if result is None:
+        return None
+    else:
+        return True
+
+def admin_name_query(name):#判断是否为管理员
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'select * from admin where user_name = ?'
+    cur.execute(sql,[name])
+    result = cur.fetchone()
+    con.close()
+    if result is None:
+        return None
+    else:
+        return True
+
+def video_delete(id):#删除视频
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'delete from video where id = ?'
+    cur.execute(sql,[id])
+    con.commit()
+    con.close()
+
+def comment_delete(id):#删除评论
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'delete from Comment where comment_id = ?'
+    cur.execute(sql,[id])
+    con.commit()
+    con.close()
+
+def video_query():
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = 'select name, path, time, id from video'
+    cur.execute(sql)
+    result = cur.fetchall()
+    con.close()
+    return result
+
+def video_name_query(input_video_name):
+    con = sqlite3.connect(DATABASE)
+    cur = con.cursor()
+    sql = "select name, path, time, id from video where name like ?"
+    cur.execute(sql,['%' + input_video_name+ '%'])
     result = cur.fetchall()
     con.close()
     return result

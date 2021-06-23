@@ -8,13 +8,18 @@
 
     <div style="max-width:1200px;margin:0 auto">
         <p>
-            {{ name }}
-            <a href="{{ url_for("logout") }}"><input type="submit" value="登出"></a>
+            <div style="height:15px">
+                <div style="float:left"><a href="{{ url_for("mainhome") }}">主页</a></div>
+                <div style="float:right">
+                    <a href="{{ url_for("home", name = name) }}">{{ name }}</a>
+                    <a href="{{ url_for("logout") }}"><input type="submit" value="登出"></a>
+                </div>
+            </div>
         </p>
         <hr>
         <p>
             作者:<br>
-            <a href="{{ url_for("home", name = video[2]) }}"><input type="submit" value="{{ video[2] }}"></a>
+            <a href="{{ url_for("othershome", username = video[2]) }}"><input type="submit" value="{{ video[2] }}"></a>
         </p>
         <div id="header">
             <p>
@@ -31,6 +36,9 @@
         <p>
             <a href="../../static/{{ video[1] }}" download="../../static/{{ video[1] }}"><input type="submit" value="download"></a>
         </p>
+        {% if video_right %}
+        <a href="{{ url_for("delete_movie", id = id) }}"><input type="submit" value="delete"></a>
+        {% endif %}
         <hr>
         <h3>评论</h3>
         {% if comments %}
@@ -40,6 +48,11 @@
                 <p>
                     <h5><a href="{{ url_for("othershome", username = comment[0]) }}">{{ comment[0] }}</a> : {{ comment[1] }}</h5>
                     <h6>{{ comment[2] }}</h6>
+                    {% if comment_right %}
+                    <a href="{{ url_for("delete_comment", id = comment[3]) }}"><input type="submit" value="delete"></a>
+                    {% elif name == comment[0] %}
+                    <a href="{{ url_for("delete_comment", id = comment[3]) }}"><input type="submit" value="delete"></a>
+                    {% endif %}
                 </p>
                 <hr>
             </div>

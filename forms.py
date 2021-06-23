@@ -26,5 +26,9 @@ class CommentForm(FlaskForm):
     submit = SubmitField('comment')
 
 class SearchForm(FlaskForm):
-    username = StringField('username', validators=[DataRequired()])
-    submit = SubmitField('username')
+    name = StringField('name', validators=[DataRequired()])
+    submit = SubmitField('name')
+
+class MessageForm(FlaskForm):
+    message = StringField('message', validators=[DataRequired()])
+    submit = SubmitField('message')

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>video</title>
+    <title>MAINHOME</title>
     <style>
         .box-out {
             position: relative;
@@ -48,22 +48,20 @@
         <div style="height:15px">
             <div style="float:left"><a href="{{ url_for("mainhome") }}">主页</a></div>
             <div style="float:right">
-                <a href="{{ url_for("home", name = username) }}">{{ username }}</a>
+                <a href="{{ url_for("home", name = name) }}">{{ name }}</a>
                 <a href="{{ url_for("logout") }}"><input type="submit" value="登出"></a>
             </div>
         </div>
     </p>
     <hr>
-    <h1>{{ authorname }}的视频</h1>
-    {% if authorname == username %}
-    <p>
-        <a href="{{ url_for("home", name = username) }}"><input type="submit" value="我的主页"></a>
-    </p>
-    {% else %}
-    <p>
-        <a href="{{ url_for("othershome", username = authorname) }}"><input type="submit" value="{{ authorname }}的主页"></a>
-    </p>
-    {% endif %}
+    <form action="{{ url_for("mainhome") }}" method="POST">
+        <p>
+            输入要搜索视频标题:<br>
+            <input type="text" name="name" />
+            <input type="submit" value="SEARCH">
+        </p>
+        {{ form.csrf_token }}
+    </form>
     {% if videos %}
     {% for video in videos %}
     <div id="container">

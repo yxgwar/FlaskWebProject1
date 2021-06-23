@@ -5,23 +5,25 @@
     <title>Friends</title>
 </head>
 <body>
-    <div id="container" style="z-index: -100; left: 0px; top: 0px; width: 100%; height: 200px">
-        <div id="menu" style="height:200px;width:40%;float:left;">
-            <p>
-                {{ username }}
+    <p>
+        <div style="height:15px">
+            <div style="float:left"><a href="{{ url_for("mainhome") }}">主页</a></div>
+            <div style="float:right">
+                <a href="{{ url_for("home", name = username) }}">{{ username }}</a>
                 <a href="{{ url_for("logout") }}"><input type="submit" value="登出"></a>
+            </div>
+        </div>
+    </p>
+    <hr>
+    <div id="container" style="z-index: -100; left: 0px; top: 0px; width: 100%; height: 60px">
+        <form action="{{ url_for("friend", name = username) }}" method="POST">
+            <p>
+                输入要搜索账号:<br>
+                <input type="text" name="name" />
+                <input type="submit" value="SEARCH">
             </p>
-        </div>
-        <div id="content" style="height:200px;width:60%;float:left;">
-            <form action="{{ url_for("friend", name = username) }}" method="POST">
-                <p>
-                    输入要搜索账号:<br>
-                    <input type="text" name="username" />
-                    <input type="submit" value="SEARCH">
-                </p>
-                {{ form.csrf_token }}
-            </form>
-        </div>
+            {{ form.csrf_token }}
+        </form>
     </div>
     <hr>
     <p>
@@ -29,7 +31,7 @@
     </p>
     <div id="container" style="z-index: -100; left: 0px; top: 0px; width: 100%; height: 100%">
         <div id="menu" style="height:100%;width:40%;float:left;">
-            <b>好友列表</b><br>
+            <b>关注列表</b><br>
             {% if friends %}
             {% for friend in friends %}
             <div id="container">
@@ -45,13 +47,13 @@
             {% endif %}
         </div>
         <div id="content" style="height:100%;width:60%;float:left;">
-            <b>好友消息</b><br>
+            <b>消息</b><br>
             {% if emails %}
             {% for email in emails %}
             <div id="container">
                 <div>
                     <p>
-                        <h5>{{ email[0] }} : {{ email[1] }}</h5>
+                        <h5><a href="{{ url_for("othershome", username = email[0]) }}">{{ email[0] }}</a> : {{ email[1] }}</h5>
                         <h6>{{ email[2] }}</h6>
                     </p>
                 </div>

@@ -7,7 +7,7 @@ from flask import Flask, flash
 from flask import render_template, request, redirect, url_for
 from flask_ngrok import run_with_ngrok
 
-from forms import LoginForm, RegisterForm, HomeForm, CommentForm, SearchForm
+from forms import LoginForm, RegisterForm, HomeForm, CommentForm, SearchForm, MessageForm
 from manager import User, random_filename
 from flask_login import login_user, login_required, current_user
 from flask_login import LoginManager
@@ -50,7 +50,7 @@ def login():
         user = User(user_name)
         if user.verify_password(password):
             login_user(user, remember = remember_me)
-            return redirect(url_for('home', name = user_name))
+            return redirect(url_for('mainhome', name = user_name))
     return render_template('login.html', form = form)
 
 @app.route('/register', methods=['GET','POST'])
@@ -81,26 +81,60 @@ def home(name):
 @app.route('/othershome/<username>', methods=['GET','POST'])
 @login_required
 def othershome(username):
-    return render_template('othershome.html', name = current_user.username, username = username)
+    is_friend = DB.friendship_query(current_user.username, username)
+    form = MessageForm()
+    if form.validate_on_submit():
+        message = request.form.get('message', None)
+        time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        DB.send_eamil(current_user.username, username, message, time)
+        return redirect(url_for('othershome', username = username))
+    return render_template('othershome.html', name = current_user.username, username = username, is_friend = is_friend, form = form)
+@app.route('/addfriend/<username>')
+@login_required
+def add_friend(username):
+    DB.friendship_insert(current_user.username, username)
+    return redirect(url_for('othershome', username = username))
+@app.route('/deletefriend/<username>')
+@login_required
+def delete_friend(username):
+    DB.friendship_delete(current_user.username, username)
+    return redirect(url_for('othershome', username = username))
 
 @app.route('/video/<username>', methods=['GET','POST'])
 @login_required
 def video(username):
     videos = DB.video_user_query(username)
-    return render_template('video.html', authorname = username, username = current_user.username, videos = videos)
+    is_equal = username == current_user.username
+    return render_template('video.html', authorname = username, username = current_user.username, videos = videos, is_equal = is_equal)
 
 @app.route('/singlemovie/<id>', methods=['GET','POST'])
 @login_required
 def singlemovie(id):
     video = DB.video_id_query(id)
     comments = DB.video_comments_query(id)
+    is_admin = DB.admin_name_query(current_user.username) 
+    video_right = is_admin or current_user.username == video[2]
     form = CommentForm()
     if form.validate_on_submit():
         comment = request.form.get('comment', None)
         time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         DB.video_comments_insert(id, current_user.username, comment, time)
         return redirect(url_for('singlemovie', id = id))
-    return render_template('singlemovie.html', name = current_user.username, id = id, video = video, comments = comments, form = form)
+    return render_template('singlemovie.html', name = current_user.username, id = id, 
+                           video = video, comments = comments, form = form, video_right = video_right, comment_right = is_admin)
+@app.route('/deletemovie/<id>')
+@login_required
+def delete_movie(id):
+    video = DB.video_id_query(id)
+    DB.video_delete(id)
+    os.remove(os.path.join(app.config['UPLOAD_PATH'], video[1]))
+    return redirect(url_for('video', username = video[2]))
+@app.route('/deletecomment/<id>')
+@login_required
+def delete_comment(id):
+    video_id = DB.comment_video_query(id)
+    DB.comment_delete(id)
+    return redirect(url_for('singlemovie', id = video_id))
 
 @app.route('/friend/<name>', methods=['GET','POST'])
 @login_required
@@ -109,8 +143,8 @@ def friend(name):
     emails = DB.message_query(name)
     form = SearchForm()
     if form.validate_on_submit():
-        username = request.form.get('username', None)
-        return redirect(url_for('user_result', username = username))
+        name = request.form.get('name', None)
+        return redirect(url_for('user_result', username = name))
     return render_template('friends.html', username = current_user.username, friends = friends, emails = emails, form = form)
 
 @app.route('/result/<username>', methods=['GET','POST'])
@@ -118,6 +152,22 @@ def friend(name):
 def user_result(username):
     names = DB.user_name_query(username)
     return render_template('result.html', names = names, username = current_user.username)
+
+@app.route('/main', methods=['GET','POST'])
+@login_required
+def mainhome():
+    form = SearchForm()
+    videos = DB.video_query()
+    if form.validate_on_submit():
+        name = request.form.get('name', None)
+        return redirect(url_for('video_result', name = name))
+    return render_template('MAINHOME.html', name = current_user.username, form = form, videos = videos)
+
+@app.route('/video_result/<name>', methods=['GET','POST'])
+@login_required
+def video_result(name):
+    videos = DB.video_name_query(name)
+    return render_template('video_result.html', videos = videos, username = current_user.username)
 
 @app.route('/logout')
 @login_required

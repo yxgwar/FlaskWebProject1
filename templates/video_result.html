@@ -16,18 +16,17 @@
         </div>
     </p>
     <hr>
-    <p>
-        <a href="{{ url_for("home", name = username) }}"><input type="submit" value="主页"></a>
-    </p>
     <h3>搜索结果</h3>
     <br>
-    {% if names %}
-    {% for name in names %}
+    {% if videos %}
+    {% for video in videos %}
     <div id="container">
-        <div>
-            <p>
-                <h5><a href="{{ url_for("othershome", username = name[0]) }}">{{ name[0] }}</a></h5>
-            </p>
+        <div class="box-out" style="height:280px;width:400px;">
+            <video class="movie box-in" width="400" height="225" controls="controls">
+                <source src="../../static/{{ video[1] }}" type="video/mp4" />
+            </video>
+            <a href="{{ url_for("singlemovie", id = video[3]) }}"><p class="title-in1">{{ video[0] }}</p></a>
+            <p class="title-in2">{{ video[2] }}</p>
         </div>
         {% endfor %}
     </div>

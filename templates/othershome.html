@@ -6,10 +6,33 @@
 </head>
 <body>
     <p>
-        {{ name }}
-        <a href="{{ url_for("logout") }}"><input type="submit" value="log out"></a>
+        <div style="height:15px">
+            <div style="float:left"><a href="{{ url_for("mainhome") }}">主页</a></div>
+            <div style="float:right">
+                <a href="{{ url_for("home", name = name) }}">{{ name }}</a>
+                <a href="{{ url_for("logout") }}"><input type="submit" value="登出"></a>
+            </div>
+        </div>
     </p>
     <hr>
+    <p>
+        {% if is_friend %}
+            <a href="{{ url_for("delete_friend", username = username) }}"><input type="submit" value="已关注"></a>
+        {% else %}
+            <a href="{{ url_for("add_friend", username = username) }}"><input type="submit" value="关注"></a> 
+        {% endif %}
+    </p>
+    <form action="{{ url_for("othershome", username = username) }}" method="POST">
+        <p>
+            发送消息:<br>
+            <input type="text" name="message" style="height:60px;width:600px;" />
+            <br>
+        </p>
+        <p>
+            <input type="submit" value="发送">
+        </p>
+        {{ form.csrf_token }}
+    </form>
     <h1>{{ username }}的视频</h1>
     <p>
         <a href="{{ url_for("video", username = username) }}"><input type="submit" value="videos"></a>
